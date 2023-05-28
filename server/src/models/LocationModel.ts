@@ -11,6 +11,6 @@ const locationSchema = new Schema<LocationModel>({
   longitude: { type: Number, required: true },
 });
 
-const LocationModel = model<LocationModel>("Location", locationSchema);
+const LocationModel = model<LocationModel>("LocationSchema", locationSchema);
 
-export default LocationModel;
+export { LocationModel };
