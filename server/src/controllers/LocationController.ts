@@ -1,43 +1,59 @@
 import { Request, Response } from "express";
-import cities from "../staticData/StaticData";
 import { LocationModel } from "../models/LocationModel";
-
-const allLocations = cities;
 
 export const getAll = (req: Request, res: Response) => {
   console.log("returning all locations");
-  const response = { data: allLocations };
-
-  return res.send(response);
-};
-
-export const getOneByName = (req: any, res: any) => {
-  let locationName = req.params.name;
-  // Location.findOneByName()
-  let response = "Details of Location: " + locationName;
-  return res.json(response);
-};
-
-exports.create = (req: any, res: any) => {
-  if (!req.body.text) {
-    return res.status(400).send({
-      message: "Improper Location Body",
+  LocationModel.find()
+    .then((locations) => {
+      res.send(locations);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occured while retriving locations",
+      });
     });
-  }
-  const newLocation = new LocationModel({
-    name: req.body.name,
-    googleMapsLink: req.body.googleMapsLink,
-    coordinates: req.body.coordinates,
-    description: req.body.description,
-    image: req.body.image,
-    reviews: req.body.reviews,
-    thingsToDo: req.body.thingsToDo,
-    placesToExplore: req.body.placesToExplore,
+};
+
+export const getOneByName = (req: Request, res: Response) => {
+  const locationName = req.params.name;
+  LocationModel.findOne({
+    name: locationName,
+  })
+    .then((location) => {
+      res.send(location);
+    })
+    .catch((err) => {
+      res.status(500).send({ message: err.message || "Some error occured" });
+    });
+};
+const createModel = (data: any) => {
+  return new LocationModel({
+    name: data.name,
+    country: data.country,
+    description: data.description,
+    latitude: data.latitude,
+    longitude: data.longitude,
   });
-  newLocation
+};
+
+export const createNew = (req: Request, res: Response) => {
+  createModel(req.body)
     .save()
     .then((data: any) => {
-      res.sent(data);
+      res.send(data);
+    })
+    .catch((err: any) => {
+      res.status(500).send({
+        message: err.message || "Some error occured",
+      });
+    });
+};
+
+export const deleteAllWithName = (req: Request, res: Response) => {
+  const cityName = req.params.name;
+  LocationModel.deleteOne({ name: cityName })
+    .then((data: any) => {
+      res.send(data);
     })
     .catch((err: any) => {
       res.status(500).send({

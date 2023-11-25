@@ -4,7 +4,7 @@ import Location from "../interfaces/LocationInterface";
 interface LocationModel extends Location, Document {}
 
 const locationSchema = new Schema<LocationModel>({
-  name: { type: String, required: true },
+  name: { type: String, required: true, unique: true },
   country: { type: String, required: true },
   description: { type: String, required: true },
   latitude: { type: Number, required: true },
